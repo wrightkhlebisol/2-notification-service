@@ -26,6 +26,7 @@
     "tsconfig-paths": "^3.15.0"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "^8.13.0",
     "@wrightkhlebisol/jobber-shared": "^0.0.5",
     "amqplib": "^0.10.3",
     "dotenv": "^16.4.5",
