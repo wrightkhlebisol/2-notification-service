@@ -4,7 +4,7 @@ import { config } from '@notifications/config';
 import { winstonLogger } from '@wrightkhlebisol/jobber-shared';
 import { Logger } from 'winston';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationElasticSearchServer', 'debug');
+const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-elastic-search-server', 'debug');
 
 const elasticSearchClient = new Client({
   node: `${config.ELASTIC_SEARCH_URL}`
