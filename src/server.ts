@@ -38,13 +38,36 @@ async function startQueues(): Promise<void> {
   const emailChannel: Channel = await createConnectionAndChannel() as Channel;
   await consumeAuthEmailNotification(emailChannel);
   await consumeOrderEmailNotification(emailChannel);
-  await emailChannel.assertExchange('jobber-auth-notification', 'direct', { durable: false });
-  const message = JSON.stringify({ name: 'jobber-auth', service: 'notification service - auth' });
-  emailChannel.publish('jobber-auth-notification', 'auth-email', Buffer.from(message));
+  // await emailChannel.assertExchange('jobber-auth-notification', 'direct', { durable: false });
+  // const verificationLink = 'http://localhost:4000/verify';
+  // const authMessageDetails: IEmailMessageDetails = {
+  //   receiverEmail: config.EMAIL_SENDER as string,
+  //   verifyLink: verificationLink,
+  //   template: 'verifyEmail',
+  // };
+  // const message = JSON.stringify(authMessageDetails);
+  // emailChannel.publish('jobber-auth-notification', 'auth-email', Buffer.from(message));
+  // log.info(`Published auth notification for ${authMessageDetails.receiverEmail}`);
+
 
   await emailChannel.assertExchange('jobber-order-notification', 'direct', { durable: false });
-  const message1 = JSON.stringify({ name: 'jobber-order', service: 'notification service - order' });
-  emailChannel.publish('jobber-auth-notification', 'auth-email', Buffer.from(message1));
+  const orderMessageDetails = {
+    sender: `Jobber App <${config.EMAIL_SENDER}>`,
+    buyerUsername: 're_wrighting',
+    sellerUsername: 'cuddle_baby',
+    orderUrl: 'http://localhost:4000/orders/jnh73rrg78h',
+    orderId: 'jnh73rrg78h',
+    orderDue: '2014-08-12T12:20:25.000Z',
+    title: 'Build Ecommerce app',
+    description: 'Build me something like Alibaba and I\'ll make you the richest programmer in the world',
+    amount: '3400.00',
+    serviceFee: '340.00',
+    requirements: 'Make it pop',
+    template: 'orderPlaced',
+    total: '3740.00',
+  };
+  const orderContent = JSON.stringify(orderMessageDetails);
+  emailChannel.publish('jobber-order-notification', 'order-email', Buffer.from(orderContent));
 
 }
 
