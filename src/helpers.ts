@@ -42,14 +42,14 @@ export async function sendEmailWithTemplates(template: string, receiver: string,
     });
 
     await email.send({
-      template,
+      template: path.join(__dirname, `../src/emails/${template}`),
       message: {
         to: receiver
       },
       locals
     });
 
-    log.info(`Sending email to ${receiver} with template ${template} and data ${JSON.stringify(locals)}`);
+    log.info(`Sent email to ${receiver}`);
   } catch (error) {
     log.error('NotificationService sendEmail() method error', error);
   }
