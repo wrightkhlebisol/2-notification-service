@@ -3,18 +3,28 @@ import { config } from '@notifications/config';
 import { winstonLogger } from '@wrightkhlebisol/jobber-shared';
 import { Logger } from 'winston';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-queue-connection', 'debug');
+const log: Logger = winstonLogger(
+  `${config.ELASTIC_SEARCH_URL}`,
+  'notification-queue-connection',
+  'debug',
+);
 
 async function createConnectionAndChannel(): Promise<Channel | undefined> {
   try {
-    const connection: Connection = await client.connect(`${config.RABBITMQ_ENDPOINT}`);
+    const connection: Connection = await client.connect(
+      `${config.RABBITMQ_ENDPOINT}`,
+    );
     // Virtual connection inside the main rabbitmq connection
     const queueChannel: Channel = await connection.createChannel();
     log.info('NotificationService connected to RabbitMQ');
     closeConnection(connection, queueChannel);
     return queueChannel;
   } catch (error) {
-    log.log('error', 'NotificationService createConnectionAndChannel() method', error);
+    log.log(
+      'error',
+      'NotificationService createConnectionAndChannel() method',
+      error,
+    );
     return undefined;
   }
 }

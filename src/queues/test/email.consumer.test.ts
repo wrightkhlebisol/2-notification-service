@@ -1,6 +1,9 @@
 import amqp from 'amqplib';
 import * as connection from '@notifications/queues/connection';
-import { consumeAuthEmailNotification, consumeOrderEmailNotification } from '@notifications/queues/email.consumer';
+import {
+  consumeAuthEmailNotification,
+  consumeOrderEmailNotification,
+} from '@notifications/queues/email.consumer';
 
 jest.mock('@notifications/queues/connection');
 jest.mock('amqplib');
@@ -26,15 +29,30 @@ describe('Email Consumer', () => {
       };
 
       jest.spyOn(channel, 'assertExchange');
-      jest.spyOn(channel, 'assertQueue').mockReturnValue({ queue: 'auth-email-queue', messageCount: 0, consumerCount: 0 });
-      jest.spyOn(connection, 'createConnectionAndChannel').mockReturnValue(channel as never);
-      const connectionChannel: amqp.Channel | undefined = await connection.createConnectionAndChannel();
+      jest.spyOn(channel, 'assertQueue').mockReturnValue({
+        queue: 'auth-email-queue',
+        messageCount: 0,
+        consumerCount: 0,
+      });
+      jest
+        .spyOn(connection, 'createConnectionAndChannel')
+        .mockReturnValue(channel as never);
+      const connectionChannel: amqp.Channel | undefined =
+        await connection.createConnectionAndChannel();
       await consumeAuthEmailNotification(connectionChannel!);
 
-      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith('jobber-auth-notification', 'direct', { 'durable': false });
+      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(
+        'jobber-auth-notification',
+        'direct',
+        { durable: false },
+      );
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
       expect(connectionChannel!.consume).toHaveBeenCalledTimes(1);
-      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith('auth-email-queue', 'jobber-auth-notification', 'auth-email');
+      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(
+        'auth-email-queue',
+        'jobber-auth-notification',
+        'auth-email',
+      );
     });
   });
 
@@ -49,15 +67,30 @@ describe('Email Consumer', () => {
       };
 
       jest.spyOn(channel, 'assertExchange');
-      jest.spyOn(channel, 'assertQueue').mockReturnValue({ queue: 'order-email-queue', messageCount: 0, consumerCount: 0 });
-      jest.spyOn(connection, 'createConnectionAndChannel').mockReturnValue(channel as never);
-      const connectionChannel: amqp.Channel | undefined = await connection.createConnectionAndChannel();
+      jest.spyOn(channel, 'assertQueue').mockReturnValue({
+        queue: 'order-email-queue',
+        messageCount: 0,
+        consumerCount: 0,
+      });
+      jest
+        .spyOn(connection, 'createConnectionAndChannel')
+        .mockReturnValue(channel as never);
+      const connectionChannel: amqp.Channel | undefined =
+        await connection.createConnectionAndChannel();
       await consumeOrderEmailNotification(connectionChannel!);
 
-      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith('jobber-order-notification', 'direct', { 'durable': false });
+      expect(connectionChannel!.assertExchange).toHaveBeenCalledWith(
+        'jobber-order-notification',
+        'direct',
+        { durable: false },
+      );
       expect(connectionChannel!.assertQueue).toHaveBeenCalledTimes(1);
       expect(connectionChannel!.consume).toHaveBeenCalledTimes(1);
-      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith('order-email-queue', 'jobber-order-notification', 'order-email');
+      expect(connectionChannel!.bindQueue).toHaveBeenCalledWith(
+        'order-email-queue',
+        'jobber-order-notification',
+        'order-email',
+      );
     });
   });
 });

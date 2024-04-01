@@ -6,9 +6,17 @@ import { Logger } from 'winston';
 import nodemailer, { Transporter } from 'nodemailer';
 import { winstonLogger, IEmailLocals } from '@wrightkhlebisol/jobber-shared';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'mail-transport-helpers', 'debug');
+const log: Logger = winstonLogger(
+  `${config.ELASTIC_SEARCH_URL}`,
+  'mail-transport-helpers',
+  'debug',
+);
 
-export async function sendEmailWithTemplates(template: string, receiver: string, locals: IEmailLocals): Promise<void> {
+export async function sendEmailWithTemplates(
+  template: string,
+  receiver: string,
+  locals: IEmailLocals,
+): Promise<void> {
   try {
     const transporter: Transporter = nodemailer.createTransport({
       host: 'smtp.ethereal.email',
@@ -16,37 +24,37 @@ export async function sendEmailWithTemplates(template: string, receiver: string,
       auth: {
         user: config.EMAIL_SENDER,
         pass: config.EMAIL_SENDER_PASSWORD,
-      }
+      },
     });
 
     const email: Email = new Email({
       message: {
-        from: `Jobber App <${config.EMAIL_SENDER}>`
+        from: `Jobber App <${config.EMAIL_SENDER}>`,
       },
       send: true,
       preview: false,
       transport: transporter,
       views: {
         options: {
-          extension: 'ejs'
-        }
+          extension: 'ejs',
+        },
       },
       juice: true,
       juiceResources: {
         preserveImportant: true,
         webResources: {
           relativeTo: path.join(__dirname, '../build'),
-          images: true
-        }
-      }
+          images: true,
+        },
+      },
     });
 
     await email.send({
       template: path.join(__dirname, `../src/emails/${template}`),
       message: {
-        to: receiver
+        to: receiver,
       },
-      locals
+      locals,
     });
 
     log.info(`Sent email to ${receiver}`);

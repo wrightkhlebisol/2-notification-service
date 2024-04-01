@@ -9,11 +9,18 @@ import { winstonLogger } from '@wrightkhlebisol/jobber-shared';
 import { healthRoutes } from '@notifications/routes';
 import { checkConnection } from '@notifications/elasticsearch';
 import { createConnectionAndChannel } from '@notifications/queues/connection';
-import { consumeAuthEmailNotification, consumeOrderEmailNotification } from '@notifications/queues/email.consumer';
+import {
+  consumeAuthEmailNotification,
+  consumeOrderEmailNotification,
+} from '@notifications/queues/email.consumer';
 
 const SERVER_PORT = 4001;
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-service', 'debug');
+const log: Logger = winstonLogger(
+  `${config.ELASTIC_SEARCH_URL}`,
+  'notification-service',
+  'debug',
+);
 
 export function start(app: Application): void {
   startServer(app);
@@ -28,14 +35,16 @@ function startServer(app: Application): void {
     httpServer.listen(SERVER_PORT, () => {
       log.info(`Notification server running on port ${SERVER_PORT}`);
     });
-    log.info(`Worker with process id of ${process.pid} for notification service started`);
+    log.info(
+      `Worker with process id of ${process.pid} for notification service started`,
+    );
   } catch (error) {
     log.log('error', 'Notification startServer() method', error);
   }
 }
 
 async function startQueues(): Promise<void> {
-  const emailChannel: Channel = await createConnectionAndChannel() as Channel;
+  const emailChannel: Channel = (await createConnectionAndChannel()) as Channel;
   await consumeAuthEmailNotification(emailChannel);
   await consumeOrderEmailNotification(emailChannel);
   // await emailChannel.assertExchange('jobber-auth-notification', 'direct', { durable: false });
@@ -49,8 +58,9 @@ async function startQueues(): Promise<void> {
   // emailChannel.publish('jobber-auth-notification', 'auth-email', Buffer.from(message));
   // log.info(`Published auth notification for ${authMessageDetails.receiverEmail}`);
 
-
-  await emailChannel.assertExchange('jobber-order-notification', 'direct', { durable: false });
+  await emailChannel.assertExchange('jobber-order-notification', 'direct', {
+    durable: false,
+  });
   const orderMessageDetails = {
     sender: `Jobber App <${config.EMAIL_SENDER}>`,
     buyerUsername: 're_wrighting',
@@ -59,7 +69,8 @@ async function startQueues(): Promise<void> {
     orderId: 'jnh73rrg78h',
     orderDue: '2014-08-12T12:20:25.000Z',
     title: 'Build Ecommerce app',
-    description: 'Build me something like Alibaba and I\'ll make you the richest programmer in the world',
+    description:
+      "Build me something like Alibaba and I'll make you the richest programmer in the world",
     amount: '3400.00',
     serviceFee: '340.00',
     requirements: 'Make it pop',
@@ -67,8 +78,11 @@ async function startQueues(): Promise<void> {
     total: '3740.00',
   };
   const orderContent = JSON.stringify(orderMessageDetails);
-  emailChannel.publish('jobber-order-notification', 'order-email', Buffer.from(orderContent));
-
+  emailChannel.publish(
+    'jobber-order-notification',
+    'order-email',
+    Buffer.from(orderContent),
+  );
 }
 
 function startElasticSearch(): void {

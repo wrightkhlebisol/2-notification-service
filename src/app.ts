@@ -4,7 +4,11 @@ import { Logger } from 'winston';
 import { start } from '@notifications/server';
 import { winstonLogger } from '@wrightkhlebisol/jobber-shared';
 
-const logs: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-app', 'debug');
+const logs: Logger = winstonLogger(
+  `${config.ELASTIC_SEARCH_URL}`,
+  'notification-app',
+  'debug',
+);
 
 function initApp(): void {
   const app: Express = express();
