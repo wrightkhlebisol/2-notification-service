@@ -1,8 +1,9 @@
 import { Channel, ConsumeMessage } from 'amqplib';
 import { config } from '@notifications/config';
 import { Logger } from 'winston';
-import { winstonLogger } from '@wrightkhlebisol/jobber-shared';
+import { IEmailLocals, winstonLogger } from '@wrightkhlebisol/jobber-shared';
 import { createConnectionAndChannel } from '@notifications/queues/connection';
+import { sendEmail } from '@notifications/queues/mail.transport';
 
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notification-email-consumer', 'debug');
 
@@ -19,9 +20,18 @@ export async function consumeAuthEmailNotification(channel: Channel): Promise<vo
       jobberQueue.queue,
       async (msg: ConsumeMessage | null) => {
         if (!msg) { return; }
-        console.log(msg.content.toString());
         // TODO: Send email
+        const { receiverEmail, username, verifyLink, resetLink, template } = JSON.parse(msg.content.toString());
+        const locals: IEmailLocals = {
+          appLink: config.CLIENT_URL as string,
+          appIcon: config.APP_ICON as string,
+          username,
+          verifyLink,
+          resetLink
+        };
+        await sendEmail(template, receiverEmail, locals);
         channel.ack(msg);
+        log.info('Consumed, sent mail and acknowledged auth notification');
       }
     );
 
@@ -43,9 +53,32 @@ export async function consumeOrderEmailNotification(channel: Channel): Promise<v
       jobberQueue.queue,
       async (msg: ConsumeMessage | null) => {
         if (!msg) { return; }
-        console.log(msg.content.toString());
-        // TODO: Send email
+
+        const { sender,
+          buyerUsername,
+          sellerUsername,
+          orderUrl,
+          orderId,
+          orderDue,
+          title,
+          description,
+          amount,
+          requirements,
+          serviceFee,
+          total,
+          template } = JSON.parse(msg.content.toString());
+
+        const locals: IEmailLocals = { sender, appLink: `${config.CLIENT_URL}`, appIcon: `${config.APP_ICON}`, amount, buyerUsername, sellerUsername, title, description, orderId, orderDue, requirements, orderUrl, serviceFee, total };
+
+        if (template === 'orderPlaced') {
+          await sendEmail(template, sender, locals);
+          await sendEmail('orderReceipt', sender, locals);
+        } else {
+          await sendEmail(template, sender, locals);
+        }
+
         channel.ack(msg);
+        log.info('Consumed, sent mail and acknowledged order notification');
       }
     );
 
