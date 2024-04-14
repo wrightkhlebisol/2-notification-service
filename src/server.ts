@@ -70,7 +70,7 @@ async function startQueues(): Promise<void> {
     orderDue: '2014-08-12T12:20:25.000Z',
     title: 'Build Ecommerce app',
     description:
-      "Build me something like Alibaba and I'll make you the richest programmer in the world",
+      'Build me something like Alibabas website but with a twist',
     amount: '3400.00',
     serviceFee: '340.00',
     requirements: 'Make it pop',
