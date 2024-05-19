@@ -33,7 +33,7 @@ export async function consumeAuthEmailNotification(
       if (!msg) {
         return;
       }
-      // TODO: Send email
+
       const { receiverEmail, username, verifyLink, resetLink, template } =
         JSON.parse(msg.content.toString());
       const locals: IEmailLocals = {
