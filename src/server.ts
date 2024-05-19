@@ -47,16 +47,6 @@ async function startQueues(): Promise<void> {
   const emailChannel: Channel = (await createConnectionAndChannel()) as Channel;
   await consumeAuthEmailNotification(emailChannel);
   await consumeOrderEmailNotification(emailChannel);
-  // await emailChannel.assertExchange('jobber-auth-notification', 'direct', { durable: false });
-  // const verificationLink = 'http://localhost:4000/verify';
-  // const authMessageDetails: IEmailMessageDetails = {
-  //   receiverEmail: config.EMAIL_SENDER as string,
-  //   verifyLink: verificationLink,
-  //   template: 'verifyEmail',
-  // };
-  // const message = JSON.stringify(authMessageDetails);
-  // emailChannel.publish('jobber-auth-notification', 'auth-email', Buffer.from(message));
-  // log.info(`Published auth notification for ${authMessageDetails.receiverEmail}`);
 
   await emailChannel.assertExchange('jobber-order-notification', 'direct', {
     durable: false,
